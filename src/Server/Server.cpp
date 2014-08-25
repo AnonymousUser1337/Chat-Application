@@ -45,15 +45,16 @@ int Server::run()
 			char buff[4096] = { 0 };//create a buffer for the message
 
 			if (recv(sConnect, buff, sizeof(buff), NULL) != 0)//only print if there is any message to recieve
+
+			{
+
+				if (buff[0] == 0) break;// if client disconnected then break out of loop and keep listening for connections
 				cout << "Message: " << buff << endl;//get the message and print it out
+				
+			}
 			else //if not receiving messages then break out of loop and listen for another connection
 				break;
-
-			/*if there is nothing in the buffer then stop
-			note: wierd workaround but it works for now
-			until I figure out another way to 
-			stop the server from printing a blank message forever*/
-			if (buff[0] == 0) break;
+			
 				
 		}
 	}
