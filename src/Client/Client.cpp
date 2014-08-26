@@ -15,6 +15,13 @@ Client::~Client()
 }
 int Client::run()
 {
+	char IP_ADDR[200];
+	char NICK[200];
+	cout << "Welcome to Basic Client 0.01 Alpha!" << endl;
+	cout << "Please enter your IP address" << endl;
+	cin.getline(IP_ADDR, sizeof(IP_ADDR));
+	cout << "Please enter a nickname" << endl;
+	cin.getline(NICK, sizeof(NICK));
 
 
 	WSAData wsa;
@@ -34,8 +41,8 @@ int Client::run()
 		{
 			cout << "You have connected to the server at 127.0.0.1(localhost)" << endl;
 			
-			
-			
+			send(cConnect, IP_ADDR, strlen(IP_ADDR) + 1, NULL);
+			send(cConnect, NICK, strlen(NICK) + 1, NULL);
 			break;
 			
 			
@@ -44,6 +51,10 @@ int Client::run()
 
 
 	}
+
+	//send IP address and /nickname
+
+
 	sendMsgLoop(&cConnect);//send messages to loop until exit
 	
 	//shutdown client
