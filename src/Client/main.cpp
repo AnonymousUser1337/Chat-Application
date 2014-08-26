@@ -1,28 +1,16 @@
-#include "Server.h"
+#include "Client.h"
 
 
-int main(int argc, char**argv)
+int main(int argc, int **argv)
 {
-	Server *server = new Server;
-	switch(server->run())//run the server if there was a problem with the server then return the error code -1
+
+	Client *client = new Client;
+	if (client->run() == START_ERROR)
 	{
-		//Handle the errors
-	case START_ERROR:
-		MessageBoxA(NULL, "WSA Startup Failure", "Error", NULL);
-		break;
-	case BIND_ERROR:
-		MessageBoxA(NULL, "Failed to Bind to Socket", "Error", NULL);
-		break;
-
-	case LISTEN_ERROR:
-		MessageBoxA(NULL, "Error Listening to socket", "Error", NULL);
-		break;
-
+		MessageBoxA(NULL, "WSA Startup failure", "Error", NULL);
 
 	}
-	delete server;
-	system("pause");//pause right before ending the program
+	delete client;
+	system("pause");
 	return 0;
 }
-
-
