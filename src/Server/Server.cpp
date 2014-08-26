@@ -1,5 +1,10 @@
 #include "Server.h"
- 
+
+/*declare these funtions here for encapsulation purposes 
+and because functionsin different threads cannot be declared 
+as Part of a Class*/
+unsigned int __stdcall recieveMsgLoop(void *data);
+unsigned int __stdcall recieveMSG(void*data);
 Server::Server()
 {
 
@@ -23,7 +28,12 @@ int Server::run()
 	if (initWinSock(wsa, DllVersion)) return START_ERROR;
 	//Create two sockets one for listening and one to connect to the clients
 	SOCKET sListen = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	SOCKET sConnect = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	List::ArrayList<SOCKET> Connections = List::ArrayList<SOCKET>();//create a list of sockets so we can accept as many people as we wan't
+	for (int i = 0; i < 100; i++)//initialize the Connections properly
+	{
+		Connections.add(socket(AF_INET, SOCK_STREAM, IPPROTO_TCP));
+
+	}
 	//Create a struct for server information such as ip address and port number that the server is on
 	SOCKADDR_IN Server = { 0 };//initialize the server
 
@@ -33,66 +43,151 @@ int Server::run()
 	if(bind(sListen, (SOCKADDR*)&Server, sizeof(Server)) != 0) return BIND_ERROR;
 	//listen for a connection with the listening socket and the amount of connections you wan't to allow
 	
-	
+
+	struct Params
+	{
+
+		List::ArrayList<SOCKET>Connections;
+		char *NICK = new char[4096];
+		char *IP_ADDR = new char[4096];
+
+	};
+	Params p;
+	int i = 0;
+	int len = sizeof(Server);
+	cout << "Listening for connection" << endl;//tell the user you are listening for connections
 	while (1)
 	{
-		if(listen_For_Connection(&sConnect, &sListen, &Server)!=0) return LISTEN_ERROR;
-
-		while (1)//Start recieving messages from the client
+		
+		
+		
+		//Listen for connections
+		listen(sListen, SOMAXCONN);
+		Connections.set(i,accept(sListen, (SOCKADDR*)&Server, &len));
+		if (Connections.get(i))//if a connection was reached then tell the user that someone connected to server
 		{
-
-
-			char buff[4096] = { 0 };//create a buffer for the message
-
-			if (recv(sConnect, buff, sizeof(buff), NULL) != 0)//only print if there is any message to recieve
-
+			char buff1[4096] = {0};//initialize the pointers to avoid undefined behavior
+			char buff2[4096] = {0};
+			recv(Connections.get(i), buff1, sizeof(buff1), NULL);//get the IP address
+			recv(Connections.get(i), buff2, sizeof(buff2), NULL);//get the Nickname
+			p.Connections = Connections;
+			int count = 0;
+			for (int j = 0; j < strlen(buff1); j++)
 			{
 
-				if (buff[0] == 0) break;// if client disconnected then break out of loop and keep listening for connections
-				cout << "Message: " << buff << endl;//get the message and print it out
+				p.IP_ADDR[j] = buff1[j];
 				
+				count++;
 			}
-			else //if not receiving messages then break out of loop and listen for another connection
-				break;
+			p.IP_ADDR[count] = '\0';//null terminate the string
 			
+			count = 0;
+			for (int j = 0; j < strlen(buff2); j++)
+			{
+
+				p.NICK[j] = buff2[j];
 				
+				count++;
+			}
+			p.NICK[count] = '\0';//null terminate the string
+			
+			cout << buff2 <<" has joined IP Address: " << buff1 << endl;
+			
 		}
+		
+		
+		_beginthreadex(0,0,recieveMsgLoop, (void*)&p, 0, 0);//begin a new thread so the server can listen for connections while recieving data
+		
+		i++;//go to the next Connections
 	}
+	
 	//Shutdown server properly
-	shutdown(sConnect, 2);
-	closesocket(sConnect);
+	for (i = 0; i < 100; i++)
+	{
+		shutdown(Connections.get(i), 2);
+		closesocket(Connections.get(i));
+	}
 	WSACleanup();
 	
 	return 0;
 }
 
-int Server::listen_For_Connection(SOCKET *sConnect, SOCKET *sListen, SOCKADDR_IN *Server)
+
+unsigned int __stdcall recieveMsgLoop(void *data)
+{
+	struct Params
+	{
+		
+		List::ArrayList<SOCKET>Connections;
+		char *NICK = (char*)calloc(4096, sizeof(char));
+		char *IP_ADDR = (char*)calloc(4096, sizeof(char));
+
+	};
+	Params *p = (Params*)data;
+	
+	struct Params2//create a struct for paramaters 
+	{
+
+		int i ;
+		List::ArrayList<SOCKET>sConnections;
+		char NICK[4096];
+		char IP_ADDR[4096];
+	};
+	
+	Params2 p2;
+	int count = 0;
+	for (int j = 0; j < strlen(p->NICK); j++)
+	{
+		p2.NICK[j] = p->NICK[j];
+		count++;
+	}
+	p2.NICK[count] = '\0';//null terminate the string
+	count = 0;
+	for (int k = 0; k < strlen(p->IP_ADDR); k++)
+	{
+		p2.IP_ADDR[k] = p->IP_ADDR[k];
+		count++;
+	}
+	p2.IP_ADDR[count] = '\0';//null terminate the string
+
+		while(1)//only print if there is any message to recieve
+		{
+			
+			for (int i = 0; i < 100; i++)
+			{
+				p2.i = i;//get the index
+				p2.sConnections = p->Connections;//get the list of Connections
+				_beginthreadex(0,0,recieveMSG,(void*)&p2, 0,0);//Create a new thread to handle recieving multiple messages at once
+			}
+		}
+		
+	
+
+
+	return 0;
+}
+unsigned int __stdcall recieveMSG(void*data)
 {
 
-
-	//tell the user you are listening for a socket
 	
-	
-	if(listen(*sListen, SOMAXCONN) !=0) return LISTEN_ERROR;
-
-
-	cout << "Listening for connection" << endl;
-	int len = sizeof(*Server);
-
-	
-	
-	while (1)//loop forever
+	struct Params2//create a struct to get all the paramaters passed in
 	{
-		if (*sConnect = accept(*sListen, (SOCKADDR*)Server, &len))
-		{
-			//tell the user that a connection was reached
-			cout << "Connection was reached at 127.0.0.1(localhost)" << endl;
+		
+		int i;				//index
+		List::ArrayList<SOCKET>sConnections;//Connections
+		char NICK[4096];
+		char IP_ADDR[4096];
 
-
-			break;//break out of loop
-
-		}
+	};
+	Params2 *p = (Params2*)data;//get the paramaters and store in struct pointer
+	char buff[4096] = { 0 };//create a buffer for the message and initialize it to avoid undefine behavior
+	if (!recv(p->sConnections.get(p->i), buff, sizeof(buff), NULL))
+	{
+		cout << "Client has left the server" << endl;
+		return 1;//if its not recieving anything return out of function
 	}
+	if (buff[0] == 0) return 2;//if message is null then dont print the message
+	cout << p->NICK<<": " << buff <<" IP Address: "<< p->IP_ADDR<<endl;//get the message and print it out
 	return 0;
-
 }
+
