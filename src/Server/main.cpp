@@ -20,6 +20,7 @@ int main(int argc, char**argv)
 
 
 	}
+	
 	delete server;
 	system("pause");//pause right before ending the program
 	return 0;
