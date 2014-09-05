@@ -1,9 +1,10 @@
 #pragma warning(disable:4996)
 #pragma comment(lib, "Ws2_32.lib")
-#include <Winsock2.h>  
+#include <Windows.h>
 #include <cstdlib>
-#include <string>
-#include <iostream>
 #include <process.h>
-//#define WIN32_LEAN_AND_MEAN
-using namespace std;
+#define WIDTH 800
+#define HEIGHT 600
+#define CLASS_NAME "Class"
+#pragma warning(disable:4996)
+#define IDC_MAIN_EDIT	101
