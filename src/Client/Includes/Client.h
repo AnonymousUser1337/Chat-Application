@@ -1,16 +1,16 @@
+#pragma once
 #include "stdclient.h"
 #define initWinSock(wsa, DllVersion) WSAStartup(DllVersion, &wsa)
 #define START_ERROR -1
+
 class Client
 {
-
 public:
 	Client();
 	~Client();
-	int run();
+	int Run(HWND *hwnd);
 private:
-	int sendMsgLoop(SOCKET*);
-
-
-
+	bool IsKeyDown(int vk);
+	int sendMsgLoop(SOCKET *cConnect, HWND *hwnd);
 };
+
