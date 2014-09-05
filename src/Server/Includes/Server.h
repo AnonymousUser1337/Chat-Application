@@ -10,7 +10,7 @@ class Server
 public:
 	Server();
 	~Server();
-	int run();
+	int run(HWND hwnd);
 
 
 
