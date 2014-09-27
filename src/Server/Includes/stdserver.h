@@ -2,7 +2,6 @@
 #pragma comment(lib, "Ws2_32.lib")
 #include <Windows.h>
 #include <cstdlib>
-#include <process.h>
 #include "ArrayList.h"
 #define WIDTH 800
 #define HEIGHT 600
