@@ -6,19 +6,26 @@ namespace List
 {
 
 	template <class T>//template - allows the user to choose what type to store in the list
-	class ArrayList{
+	class ArrayList
+	{
 	private://private variables
 		int length = 1;//sets the length to 1
 		T *a1 = (T*)calloc(length, sizeof(T));//allocates enough memory for 1 item
 
 	public://public functions
-		ArrayList(){//constructor
+		ArrayList()
+		{//constructor
 			//does nothing but you probably already knew that 
 
 		}
+		~ArrayList(){//destructor
+			//frees up the memory that a1 is pointing to 
+			free(a1);
+		}
 		inline void add(T item){//adds an item to the list
 
-			if (length != 0){//if length is not equal to 0
+			if (length != 0)
+			{//if length is not equal to 0
 
 
 				a1 = (T*)realloc(a1, length*sizeof(T));//re-allocates memory 
@@ -26,10 +33,11 @@ namespace List
 				a1[length - 1] = item;//adds item to the end of the list
 				length++;//adds 1 to the length
 			}
-			else{//else if it is equal to 0
+			else
+			{//else if it is equal to 0
 
 
-				a1[length - 1] = item;//adds item to the front of the list
+				a1[length] = item;//adds item to the front of the list
 
 
 			}
@@ -74,15 +82,15 @@ namespace List
 		}
 		inline T get(int i){//gets the integer at the index of i
 
-
-			return length != 0 ? a1[i] : NULL;//returns a[i] if the length is not 0, if it is 0 then it returns NULL wich is defined as 0
+			
+			return length != 0 ? a1[i] : T();//returns a[i] if the length is not 0, if it is 0 then it returns NULL wich is defined as 0
 		}
 		inline void set(int i, T type)
 		{
-			a1[i] = type;
+			a1[i] = type;//sets whatever is at teh index of i to type
 		}
 		inline int size(){//gets the size
-
+			
 			return length != 0 ? length - 1 : NULL;//if the length is not equal to 0 then it returns the length-1 , if it is not 0 then it returns NULL
 		}
 		inline void print(){//prints the list
