@@ -3,7 +3,6 @@
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 void print_line(HWND hwnd, const char *Msg);
 int Run(HWND );
-unsigned int __stdcall receiveMSGThread(void *data);
 #define START_ERROR -1
 #define BIND_ERROR -2
 #define LISTEN_ERROR -3
@@ -276,10 +275,4 @@ void print_line(HWND hwnd, const char *Msg)
 	char buff[length];
 	GetDlgItemText(hwnd, IDC_MAIN_EDIT, buff, length);
 	SetDlgItemText(hwnd, IDC_MAIN_EDIT, strcat(buff, Msg));
-}
-unsigned int __stdcall  receiveMSGThread(void *data)
-{
-
-
-	return 0;
 }
