@@ -1,3 +1,4 @@
+
 #ifndef ARRAYLIST_H_
 #define ARRAYLIST_H_
 #include "stdserver.h"
@@ -50,6 +51,7 @@ namespace List
 				T *b = (T*)calloc(length, sizeof(T));//creates a new pointer to a memory block of size length 	
 				int idxModifier = 0;//modifies the index so it adds the items to the array in the right places
 				int i = 0;//counter/index
+				int count = 0;
 				while (i < length){
 					if (a1[i] != item)//if the item at the index of i is not equal to item we want to delete
 					{
@@ -60,18 +62,15 @@ namespace List
 					{
 						idxModifier++;//adds 1 to the index modifier
 						b[i] = a1[i + 1];//adds the next item so we dont add the item back to the array
-
+						count++;
 
 					}
 
 					i++;//adds one to i
 				}
 
-				if (count != 0)
-					a1 = (T*)realloc(b, length*sizeof(T));
-				else
-					cout << "The item does not exist!" << endl;//lets the user know that item does not exist
-
+				memset(a1, 0, sizeof(a1));
+				memcpy(a1, b, length);
 				free(b);//frees up the memory that b allocated at the top of the function
 			}
 			else
